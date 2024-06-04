@@ -12,9 +12,6 @@ public final class PughSkipListMapBenchmark {
     private static final int MAP_SIZE = 10_000;
     
     public static void main(String[] args) {
-        double coinProbability = parseCoinProbability(args);
-        coinProbability = 0.25;
-        System.out.printf("Coin probability = %f.\n", coinProbability);
         
         Random random = new Random(13L);
         
@@ -27,13 +24,13 @@ public final class PughSkipListMapBenchmark {
         Collections.shuffle(list, random);
         
         PughSkipListMap<Integer, Long> skipListMap = 
-                new PughSkipListMap<>(coinProbability, random);
+                new PughSkipListMap<>(0.4, random);
         
-        ConcurrentSkipListMap<Integer, Long> treeMap =
+        ConcurrentSkipListMap<Integer, Long> concurrentSkipListMap =
                 new ConcurrentSkipListMap<>();
         
         long totalSkipListMap = 0L;
-        long totalTreeMap = 0L;
+        long totalConcurrentSkipListMap = 0L;
         
         long start = System.currentTimeMillis();
         
@@ -45,20 +42,20 @@ public final class PughSkipListMapBenchmark {
         
         totalSkipListMap += end - start;
         
-        System.out.printf("SkipListMap.put in %d milliseconds.\n",
+        System.out.printf("PughSkipListMap.put in %d milliseconds.\n",
                           end - start);
         
         start = System.currentTimeMillis();
         
         for (Integer key : list) {
-            treeMap.put(key, Long.valueOf(key));
+            concurrentSkipListMap.put(key, Long.valueOf(key));
         }
         
         end = System.currentTimeMillis();
         
-        totalTreeMap += end - start;
+        totalConcurrentSkipListMap += end - start;
         
-        System.out.printf("TreeMap.put in %d milliseconds.\n",
+        System.out.printf("ConcurrentSkipListMap.put in %d milliseconds.\n",
                           end - start);
         
         Collections.shuffle(list, random);
@@ -73,20 +70,20 @@ public final class PughSkipListMapBenchmark {
         
         totalSkipListMap += end - start;
         
-        System.out.printf("SkipListMap.get %d milliseconds.\n",
+        System.out.printf("PughSkipListMap.get %d milliseconds.\n",
                           end - start);
         
         start = System.currentTimeMillis();
         
         for (Integer key : list) {
-            treeMap.get(key);
+            concurrentSkipListMap.get(key);
         }
         
         end = System.currentTimeMillis();
         
-        totalTreeMap += end - start;
+        totalConcurrentSkipListMap += end - start;
         
-        System.out.printf("TreeMap.get %d milliseconds.\n",
+        System.out.printf("ConcurrentSkipListMap.get %d milliseconds.\n",
                           end - start);
         
         Collections.shuffle(list, random);
@@ -101,50 +98,26 @@ public final class PughSkipListMapBenchmark {
         
         totalSkipListMap += end - start;
         
-        System.out.printf("SkipListMap.remove %d milliseconds.\n",
+        System.out.printf("PughSkipListMap.remove %d milliseconds.\n",
                           end - start);
         
         start = System.currentTimeMillis();
         
         for (Integer key : list) {
-            treeMap.remove(key);
+            concurrentSkipListMap.remove(key);
         }
         
         end = System.currentTimeMillis();
         
-        totalTreeMap += end - start;
+        totalConcurrentSkipListMap += end - start;
         
-        System.out.printf("TreeMap.remove %d milliseconds.\n",
+        System.out.printf("ConcurrentSkipListMap.remove %d milliseconds.\n",
                           end - start);
         
-        System.out.printf("SkipListMap total: %d milliseconds.\n",
+        System.out.printf("PughSkipListMap total: %d milliseconds.\n",
                           totalSkipListMap);
         
-        System.out.printf("TreeMap total: %d milliseconds.\n",
-                          totalTreeMap);
-    }
-    
-    private static long parseSeed(String[] args) {
-        if (args.length < 1) {
-            return System.currentTimeMillis();
-        }
-        
-        try {
-            return Long.parseLong(args[0]);
-        } catch (NumberFormatException ex) {
-            return System.currentTimeMillis();
-        }
-    }
-    
-    private static double parseCoinProbability(String[] args) {
-        if (args.length < 2) {
-            return PughSkipListMap.DEFAULT_COIN_PROBABILITY;
-        }
-        
-        try {
-            return Double.parseDouble(args[0]);
-        } catch (NumberFormatException ex) {
-            return PughSkipListMap.DEFAULT_COIN_PROBABILITY;
-        }
+        System.out.printf("ConcurrentSkipListMap total: %d milliseconds.\n",
+                          totalConcurrentSkipListMap);
     }
 }
